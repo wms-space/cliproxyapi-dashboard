@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
@@ -55,7 +56,7 @@ const loadProvidersData = async (signal?: AbortSignal): Promise<Record<ProviderI
 };
 
 export default function ProvidersPage() {
-  const { user: authUser } = useAuth();
+  const { user: authUser, isLoading: authLoading } = useAuth();
   const currentUser: CurrentUser | null = authUser
     ? { id: authUser.id, username: authUser.username, isAdmin: authUser.isAdmin }
     : null;
@@ -72,6 +73,7 @@ export default function ProvidersPage() {
   const [incognitoBrowserEnabled, setIncognitoBrowserEnabled] = useState(false);
   const { showToast } = useToast();
   const t = useTranslations("providers");
+  const te = useTranslations("errors");
 
   const loadMaxKeysPerUser = useCallback(async (isAdminUser: boolean, signal?: AbortSignal) => {
     if (!isAdminUser) return;
@@ -117,6 +119,10 @@ export default function ProvidersPage() {
   useEffect(() => {
     const controller = new AbortController();
     const load = async () => {
+      if (!authUser?.isAdmin) {
+        setLoading(false);
+        return;
+      }
       const newConfigs = await loadProvidersData(controller.signal);
       if (controller.signal.aborted) return;
       setConfigs(newConfigs);
@@ -150,6 +156,30 @@ export default function ProvidersPage() {
         0
       )
     : 0;
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center py-24">
+        <p className="text-sm text-[var(--text-muted)]">{t("loadingText")}</p>
+      </div>
+    );
+  }
+
+  if (!authUser?.isAdmin) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 py-24 text-center">
+        <p className="text-lg font-semibold text-[var(--text-primary)]">
+          {te("dashboardNotFoundDescription")}
+        </p>
+        <Link
+          href="/dashboard"
+          className="text-sm font-medium text-blue-600 underline underline-offset-2 hover:text-blue-800"
+        >
+          {te("backToDashboard")}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

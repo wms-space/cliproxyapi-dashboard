@@ -138,7 +138,7 @@ const NAV_SECTIONS = [
 
 const NAV_ITEMS = [
   { href: "/dashboard", labelKey: "quickStart", icon: IconPlayCircle, adminOnly: false, section: "general" },
-  { href: "/dashboard/providers", labelKey: "providers", icon: IconLayers, adminOnly: false, section: "general" },
+  { href: "/dashboard/providers", labelKey: "providers", icon: IconLayers, adminOnly: true, section: "general" },
   { href: "/dashboard/usage", labelKey: "usage", icon: IconBarChart, adminOnly: false, section: "general" },
   { href: "/dashboard/quota", labelKey: "quota", icon: IconGauge, adminOnly: false, section: "general" },
   { href: "/dashboard/api-keys", labelKey: "apiKeys", icon: IconKey, adminOnly: false, section: "access" },

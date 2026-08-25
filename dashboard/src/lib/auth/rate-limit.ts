@@ -15,7 +15,7 @@ export type RateLimitResult = {
 };
 
 export const RATE_LIMITS = {
-  LOGIN: { limit: 10, windowMs: 15 * 60 * 1000 },           // 10 attempts / 15 min
+  LOGIN: { limit: 30, windowMs: 15 * 60 * 1000 },          // 30 attempts / 15 min (shared NAT egress IPs)
   CHANGE_PASSWORD: { limit: 5, windowMs: 15 * 60 * 1000 },  // 5 attempts / 15 min
   API_KEYS: { limit: 10, windowMs: 60 * 1000 },             // 10 requests / 1 min
   CUSTOM_PROVIDERS: { limit: 10, windowMs: 60 * 1000 },     // 10 requests / 1 min

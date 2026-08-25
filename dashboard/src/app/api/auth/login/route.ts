@@ -15,7 +15,9 @@ import { ERROR_CODE, Errors, apiErrorWithHeaders } from "@/lib/errors";
 import { AUDIT_ACTION, logAuditAsync } from "@/lib/audit";
 import { logger } from "@/lib/logger";
 
-const LOGIN_ATTEMPTS_LIMIT = 10;
+// Raised from 10: all dashboard users share a small set of whitelisted NAT egress IPs,
+// so a per-IP bucket is collective. 30/15min still bounds brute force.
+const LOGIN_ATTEMPTS_LIMIT = 30;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: NextRequest) {

@@ -316,19 +316,11 @@ export default function QuotaPage() {
   const pageStart = (currentPage - 1) * QUOTA_ACCOUNTS_PAGE_SIZE;
   const paginatedAccounts = filteredAccounts.slice(pageStart, pageStart + QUOTA_ACCOUNTS_PAGE_SIZE);
 
-  // Only rewrite URL to clamp `page` once quota data has arrived. Before the
-  // first fetch resolves, `filteredAccounts` is empty and `totalPages` is 1,
-  // so clamping here would drop a deep-linked `page=N` before it could be used.
-  const normalizedSearch = buildQuotaSearch({ ...query, page: currentPage });
-  const currentSearch = searchParams.toString();
-  const expectedSearch = normalizedSearch.startsWith("?") ? normalizedSearch.slice(1) : normalizedSearch;
-
-  useEffect(() => {
-    if (!quotaData) return;
-    if (currentSearch !== expectedSearch) {
-      router.replace(`${pathname}${normalizedSearch}`, { scroll: false });
-    }
-  }, [quotaData, currentSearch, expectedSearch, normalizedSearch, pathname, router]);
+  // NOTE: Removed the automatic URL re-write effect that used to normalize
+  // search/filter params back into the URL whenever quota data changed (incl.
+  // the 120s auto-refresh). It re-activated stale searchParams (e.g. a
+  // previously searched username) and re-appended them to the URL on its own.
+  // URL updates now happen only via explicit user actions (replaceQuery).
 
   const activeAccounts = filteredAccounts.filter((account) => account.supported && !account.error).length;
 

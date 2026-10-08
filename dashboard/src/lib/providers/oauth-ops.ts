@@ -690,12 +690,15 @@ export async function toggleOAuthAccountByIdOrName(
       }
     }
 
-    const endpoint = `${MANAGEMENT_BASE_URL}/auth-files?name=${encodeURIComponent(resolved.accountName)}`;
+    // CPA's status toggle endpoint. NOTE: must be PATCH /auth-files/status, NOT
+    // POST /auth-files (which is UploadAuthFile and overwrites the credential file
+    // with the request body, destroying access/refresh tokens).
+    const endpoint = `${MANAGEMENT_BASE_URL}/auth-files/status`;
 
     let postRes: Response;
     try {
       postRes = await fetchWithTimeout(endpoint, {
-        method: "POST",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${MANAGEMENT_API_KEY}`,
@@ -712,7 +715,7 @@ export async function toggleOAuthAccountByIdOrName(
           endpoint,
           accountName: resolved.accountName,
           timeoutMs: FETCH_TIMEOUT_MS,
-        }, "Fetch timeout - toggleOAuthAccountByIdOrName POST");
+        }, "Fetch timeout - toggleOAuthAccountByIdOrName PATCH");
         return { ok: false, error: "Request timeout toggling OAuth account" };
       }
       throw fetchError;

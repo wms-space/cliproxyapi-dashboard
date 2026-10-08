@@ -74,7 +74,11 @@ function buildRunArgs(cfg: ContainerConfig, imageTag: string): string[] {
   for (const net of cfg.networks) { args.push("--network", net); }
 
   args.push(
-    "--health-cmd", "wget --no-verbose --tries=1 -O /dev/null http://localhost:8317/",
+    // Must be a command available inside the CPA image. The image (v8.x) has no
+    // wget/curl/nc, but it does ship bash, so use bash's /dev/tcp probe (same as
+    // the docker-compose healthcheck). Using wget here produced a permanently
+    // unhealthy container after every self-update.
+    "--health-cmd", "bash -c 'echo > /dev/tcp/localhost/8317'",
     "--health-interval", "30s",
     "--health-timeout", "10s",
     "--health-retries", "3",
